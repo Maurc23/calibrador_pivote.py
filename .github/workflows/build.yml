@@ -1,0 +1,35 @@
+name: Build EXE for Windows 7 (32-bit)
+
+on:
+  push:
+    branches: [ "main" ] 
+  workflow_dispatch:     
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Descargar el código
+      uses: actions/checkout@v4
+
+    - name: Configurar Python 3.8 (Soporte NATIVO Windows 7 - 32 bits)
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.8'
+        architecture: 'x86'
+        
+    - name: Instalar PyInstaller
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip install pyinstaller
+        
+    - name: Compilar ejecutable (32 bits)
+      run: |
+        pyinstaller --onefile --windowed calibrador_pivote.py
+        
+    - name: Subir el EXE final (Artifact)
+      uses: actions/upload-artifact@v4
+      with:
+        name: Calibrador_Win7_32bits
+        path: dist/*.exe
